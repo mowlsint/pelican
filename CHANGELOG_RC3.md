@@ -1,0 +1,1 @@
+- 1.3-RC3: Kennsignal von D1 bezogen, keine feste Zuordnung im JavaScript. Eingangsblock optional mit Kennsignal und Auto-Tafelerkennung. Keine 8-Buchstaben-Codeänderungen.
