@@ -1,0 +1,11 @@
+node_modules/
+.dev.vars
+.wrangler/
+.env*
+*_PRIVATE*.sql
+*PRIVATE*.zip
+*MASTER*.json
+*SCHEMA*.json
+PELICAN_1_2_*
+private/
+**/*.pdf
