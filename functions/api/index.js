@@ -97,18 +97,34 @@ export async function onRequest({request,env}){
     if(!allowed.length)return reject('Keine aktive PELICAN-Freigabe für dieses Benutzerkonto',403);
     if(request.method==='GET'){
       const catalog=Object.fromEntries(await Promise.all(FIELDS.map(async k=>[k,await getDoc(env,'catalog:'+k)])));
-      return respond({version:'1.2-RC2',tables:allowed,defaultTable:allowed.some(x=>x.table_id==='louisiana')?'louisiana':allowed[0].table_id,catalog});
+      const tables=await Promise.all(allowed.map(async g=>({...g,signal:(await getDoc(env,'table:'+g.table_id)).signal})));
+      return respond({version:'1.3-RC3',tables,defaultTable:allowed.some(x=>x.table_id==='louisiana')?'louisiana':allowed[0].table_id,catalog});
     }
     if(Number(request.headers.get('content-length')||0)>10000)return reject('Anfrage zu groß',413);
     const body=await request.json();
     const operation=body.operation;
     if(!['encode','decode'].includes(operation))return reject('Unbekannte Aktion');
-    const grant=allowed.find(x=>x.table_id===body.table);
+    let tableId=body.table, signalDetected=false;
+    if(operation==='decode'){
+      const raw=String(body.input||'').trim().toUpperCase();
+      const tokens=raw.split(/[\s.\-]+/).filter(Boolean);
+      if(tokens[0]?.length===3){
+        if(tokens.length<3 || tokens.at(-1)!==tokens[0])throw Error('Kennsignal am Anfang und Ende muss identisch sein');
+        const options=await Promise.all(allowed.filter(g=>g.can_decode).map(async g=>({id:g.table_id,signal:(await getDoc(env,'table:'+g.table_id)).signal})));
+        const match=options.find(t=>t.signal===tokens[0]);
+        if(!match)return reject('Keine Freigabe fuer das empfangene Kennsignal oder ungueltiges Kennsignal',403);
+        tableId=match.id;
+        body.input=tokens.slice(1,-1).join('\n');
+        signalDetected=true;
+      }
+    }
+    const grant=allowed.find(x=>x.table_id===tableId);
     if(!grant || (operation==='encode'&&!grant.can_encode)||(operation==='decode'&&!grant.can_decode))return reject('Keine Freigabe für diese Codetafel oder Aktion',403);
-    const tab=await getDoc(env,'table:'+body.table);
+    const tab=await getDoc(env,'table:'+tableId);
     const catalog=Object.fromEntries(await Promise.all(FIELDS.map(async k=>[k,await getDoc(env,'catalog:'+k)])));
     const symbols=await getDoc(env,'catalog:symbols');
-    return respond(operation==='encode'?encode(body,tab,catalog,symbols):decode(body,tab,catalog,symbols));
+    if(operation==='encode')return respond(encode(body,tab,catalog,symbols));
+    return respond({...decode(body,tab,catalog,symbols),tableId,signalDetected});
   }catch(e){
     if(msg(e).startsWith('PELICAN-Daten fehlen'))return reject('Codetafeln noch nicht freigeschaltet',503);
     return reject('Anfrage abgelehnt: '+msg(e),400);

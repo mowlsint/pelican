@@ -6,8 +6,8 @@ async function api(payload){const response=await fetch('/api/',payload?{method:'
 function err(message){$('status').textContent=message;$('status').style.color='#a12828';}
 function setButtons(){const grant=config.tables.find(x=>x.table_id===$('table').value);$('encode').disabled=!grant?.can_encode;$('decode').disabled=!grant?.can_decode;$('add').disabled=!lastFrames.length;}
 function printBlock(){
-  const sig=config?.tables.find(x=>x.table_id===$('table').value)?.table_id;
-  const signal=({louisiana:'LOU',sint_maarte:'SIM',barbados:'BAR',saint_kitts_and_nevis:'KEN',turks_and_caicos_islands:'TCI'})[sig];
+  const signal=config?.tables.find(x=>x.table_id===$('table').value)?.signal;
+  if(!signal){$('broadcast').textContent='Kein Signal fuer diese Tafel freigegeben.';return;}
   $('broadcast').textContent=frames.length?[signal,...frames,signal].join('\n'):'Noch keine Meldungen.';
   $('broadcastSpoken').textContent=frames.length?[signal,...frames,signal].map(g=>[...g].map(c=>NATO[c]).join(' ')+'.').join('\n'):'Noch keine Meldungen.';
 } 
@@ -41,6 +41,11 @@ $('decode').onclick=async()=>{
   const el=$('decoded');el.replaceChildren();
   try{
     const r=await api({operation:'decode',table:$('table').value,input:decodeInput.value});
+    if(r.tableId && r.tableId!==$('table').value){
+      $('table').value=r.tableId;
+      frames=[];lastFrames=[];$('encoded').textContent='–';$('speak').textContent='';
+      setButtons();printBlock();
+    }
     for(let i=0;i<r.messages.length;i++){
       const m=r.messages[i];
       const entry=document.createElement('section');entry.className='decoded-message';
@@ -50,7 +55,7 @@ $('decode').onclick=async()=>{
       el.append(entry);
     }
     $('decodeCount').textContent=r.totalFrames+' Gruppe(n) verarbeitet · '+r.messages.length+' Hauptmeldung(en) decodiert';
-    $('status').textContent='Decodierung abgeschlossen';$('status').style.color='';
+    $('status').textContent=(r.signalDetected?'Kennsignal automatisch erkannt · ':'')+'Decodierung abgeschlossen';$('status').style.color='';
   }catch(e){
     const p=document.createElement('p');p.className='error';p.textContent='Decodierung fehlgeschlagen: '+e.message;el.append(p);
     err(e.message);
