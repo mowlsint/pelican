@@ -98,7 +98,7 @@ export async function onRequest({request,env}){
     if(request.method==='GET'){
       const catalog=Object.fromEntries(await Promise.all(FIELDS.map(async k=>[k,await getDoc(env,'catalog:'+k)])));
       const tables=await Promise.all(allowed.map(async g=>({...g,signal:(await getDoc(env,'table:'+g.table_id)).signal})));
-      return respond({version:'1.3-RC3',tables,defaultTable:allowed.some(x=>x.table_id==='louisiana')?'louisiana':allowed[0].table_id,catalog});
+      return respond({version:'1.4-RC1',tables,defaultTable:allowed.some(x=>x.table_id==='louisiana')?'louisiana':allowed[0].table_id,catalog});
     }
     if(Number(request.headers.get('content-length')||0)>10000)return reject('Anfrage zu groß',413);
     const body=await request.json();
