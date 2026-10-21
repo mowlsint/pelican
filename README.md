@@ -1,24 +1,17 @@
-# PELICAN 1.4-RC1 · Cloudflare Pages · GitHub-ONLY
+# PELICAN 1.5-DRAFT - UNIVERSAL PROGRAM CODE
 
-**Hier sind KEINE geheimen Codetafeln, Kennsignal-Mappings oder Migrationsdaten enthalten.**
+**Ausschliesslich oeffentliche universelle Software, keine Geheimcodes.**
 
-## Neu
+Diese Version basiert auf 1.4-RC1. Entwurfsstand, nicht produktiv einsetzen.
 
-- Ereignis `MIL-EXERCISE-ANNOUNCED`: „Militärische Übung für künftigen Zeitpunkt angekündigt; Durchführung nicht bestätigt“.
-- Die tatsächlichen zweibuchstabigen Ereigniscodes liegen ausschließlich in D1 und den persönlichen Papiercodetafeln.
-- Vorherige Ereigniskennungen, See-/Objekt-/Admiralty-Codes, Zusatzpräfixe und die geheim verwalteten Funkkennungen DRJ / ABC / BCB / FOC / SCR werden **nicht geändert**. Ihre Zuordnung ist nur im vertraulichen Archiv enthalten.
-- Ein angekündigter Übungstermin bedeutet NICHT, dass die Übung tatsächlich begonnen hat oder das Gebiet aktuell gesperrt ist.
-- Exakte Zeiten, Daten und Warnnummern benötigen wie bisher `ND`-Ergänzungsgruppen (Louisiana).
+* `index.html`: Cloudflare Pages, Login/Grants mit Cloudflare Access / D1.
+* `functions/api/index.js`: Authentifizierter D1-Adapter.
+* `lib/pelican-core.mjs`: gemeinsamer Codier-/Decodierkern, ohne vertrauliche Codepaare.
+* `offline.html`: echte Einzelseiten-Offline-HTML mit lokalem, fluechtigem Dateiupload, ohne Netzwerkrequests.
+* `schema.sql`: nur oeffentliches Datenbankschema; keine Datensaetze.
 
-## Cloudflare Update
+## Betrieb / keine automatischen Aktionen
 
-1. Vorher D1 sichern. Für eine bestehende 1.3-RC3-Installation: Aus dem **privaten** Archiv die Datei `PELICAN_D1_MIGRATION_1_4_RC1_VERTRAULICH.sql` mit `wrangler d1 execute <DB-NAME> --remote --file <PFAD>` einspielen. **Nicht in GitHub ablegen!**
-2. Dieses öffentliche GitHub-Paket in das Repository übernehmen. Der Pages-Workflow deployed nur Code, nicht die vertrauliche SQL.
-3. Mit einem berechtigten Cloudflare-Access-Konto den neuen Katalogeintrag im Ereignisdropdown prüfen; eine echte End-to-End-Testmeldung kodieren und zurückdekodieren.
-4. Bei alten Papier-/Offline-Clients den neuen Ereigniscode nicht verwenden, bis die neue Tafel zugestellt ist.
+Private `*.book.json`, `*.signals.json`, PDF-Buecher und `PELICAN_1_5_D1_PRIVATE_*.sql` befinden sich AUSSCHLIESSLICH im getrennten Privatpaket. Vor SQL-Einsatz DB sichern; erst nach Freigabe Tests in Staging. Keine Actions/Deployments ausgeloest.
 
-## Wichtige Semantik
-
-Das Feld `event` ist ein **Ereignis**, kein universeller Statusmarker. Verallgemeinerte PRELIMINARY-/STATUS-Funktionen sind als Vorschlag in der privaten Dokumentation formuliert, noch nicht neu kodiert.
-
-Cloudflare Access und D1-Grants müssen bereits sicher konfiguriert sein. Keine Deployment-/D1-Schreiboperation wurde automatisch vorgenommen. Das System ist ein codebasiertes Verschleierungsverfahren und keine belastbare kryptografische Verschlüsselung.
+Der Webdecoder erhaelt keine Codetabellen im Browser. Die Offline-Datei nimmt beliebige Einzeltafeln und optional ihre Signaldatei entgegen. Offline-Pakete sind bei Weitergabe kopierbar; Besitz ist keine kryptografische Autorisierung.

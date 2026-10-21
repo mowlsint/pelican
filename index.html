@@ -2,9 +2,17 @@
 <html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow,noarchive"><title>PELICAN · MOwlSINT Secure Access</title>
 <link rel="stylesheet" href="assets/site.css">
-</head><body><header><div><h1>PELICAN</h1><div>MOwlSINT · Geschützter Decoder</div><div class="small">CONFIDENTIAL · AUTHORISED RECIPIENTS ONLY · PILOT 1.3-RC3</div></div><img src="assets/mowlsint-logo.png" alt="MOwlSINT Eule auf Eisberg"></header>
-<main><p class="notice">Zugriff nur für freigegebene Empfänger. Keine vertraulichen Nachrichten über ein ungeschütztes Endgerät bearbeiten. Das Codebuch wird nicht an den Browser ausgeliefert. PELICAN ersetzt keine moderne Verschlüsselung.</p><article><h2>Codetafel</h2><label for="table">Freigegebene Codetafeln</label><select id="table" disabled></select><div id="status">Zugriffsrechte werden geprüft …</div></article>
-<div class="grid"><article><h2>Codieren</h2><div id="fields"></div><label for="details">Optionale Zusatzinformation</label><textarea id="details" placeholder="Bei nicht katalogisierten Meldungen ergänzen"></textarea><button id="encode" disabled>Codieren</button><pre id="encoded">–</pre><div id="speak" class="speak"></div><button id="add" disabled>Zum Sendeblock hinzufügen</button></article>
+</head><body><header><div><h1>PELICAN</h1><div>MOwlSINT · Geschützter Decoder</div><div class="small">CONFIDENTIAL · AUTHORISED RECIPIENTS ONLY · 1.5-DRAFT · MODULAR</div></div><img src="assets/mowlsint-logo.png" alt="MOwlSINT Eule auf Eisberg"></header>
+<main><p class="notice">Zugriff nur für freigegebene Empfänger. Keine vertraulichen Nachrichten über ein ungeschütztes Endgerät bearbeiten. Der Browser erhält keine vertraulichen Codezuordnungen; Berechtigungen werden serverseitig geprüft. PELICAN ersetzt keine moderne Verschlüsselung.</p><article><h2>Codetafel</h2><label for="table">Freigegebene Codetafeln</label><select id="table" disabled></select><div id="status">Zugriffsrechte werden geprüft …</div></article>
+<div class="grid"><article><h2>Codieren</h2><div id="fields"></div><label for="details">Optionale Zusatzinformation</label><textarea id="details" placeholder="Bei nicht katalogisierten Meldungen ergänzen"></textarea><fieldset style="margin:12px 0;padding:12px;border:1px solid #8da4b0"><legend>Zusatzgruppen 1.5-DRAFT</legend>
+<label for="msgid">Nachrichten-ID (6 Buchstaben, optional)</label><input id="msgid" maxlength="6" placeholder="QMBRTA">
+<label for="refid">Referenz-ID (6 Buchstaben, optional)</label><input id="refid" maxlength="6">
+<label for="statusfamily">Statusfamilie</label><select id="statusfamily"><option value="">Ohne Status</option><option>OPERATION</option><option>VALIDITY</option><option>EDITORIAL</option><option>VERIFICATION</option></select>
+<label for="statusvalue">Status (Wert aus FAMILY)</label><select id="statusvalue"><option value="">—</option></select>
+<label for="statustime">Status-Zeitbezug</label><select id="statustime"><option>NONE</option><option>AS_OF</option><option>OCCURRED_AT</option><option>SCHEDULED_FOR</option><option>EFFECTIVE_FROM</option><option>VALID_UNTIL</option><option>WINDOW</option></select>
+<label for="unicode">Unicode-Name oder freier Zusatztext (verlustfrei)</label><input id="unicode" placeholder="Gdańsk / Llanfair... / 中文">
+<label for="specials">Sondergruppen (JSON-Liste, optional)</label><textarea id="specials" rows="4" placeholder='[{"type":"imo","actor":"B","value":"1234567"}]'></textarea>
+</fieldset><button id="encode" disabled>Codieren</button><pre id="encoded">–</pre><div id="speak" class="speak"></div><button id="add" disabled>Zum Sendeblock hinzufügen</button></article>
 <article class="decoder-area"><h2>Mehrere Meldungen decodieren</h2>
 <label for="decodeInput">Eine achtstellige Gruppe je Zeile (Kennsignal am Anfang und Ende optional)</label>
 <p class="small decoder-hint"><kbd>Tab</kbd> = neue Zeile · <kbd>Enter</kbd> = neue Zeile · <kbd>Strg</kbd> + <kbd>Enter</kbd> = alle decodieren. <kbd>Shift</kbd> + <kbd>Tab</kbd> wechselt wie gewohnt das Bedienelement.</p>
