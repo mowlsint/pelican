@@ -2,10 +2,10 @@
 <html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow,noarchive"><title>PELICAN · MOwlSINT Secure Access</title>
 <link rel="stylesheet" href="assets/site.css">
-</head><body><header><div><h1>PELICAN</h1><div>MOwlSINT · Geschützter Decoder</div><div class="small">CONFIDENTIAL · AUTHORISED RECIPIENTS ONLY · 1.5-DRAFT · MODULAR</div></div><img src="assets/mowlsint-logo.png" alt="MOwlSINT Eule auf Eisberg"></header>
+</head><body><header><div><h1>PELICAN</h1><div>MOwlSINT · Geschützter Decoder</div><div class="small">CONFIDENTIAL · AUTHORISED RECIPIENTS ONLY · 1.5-SECURITY-RC2 · MODULAR</div></div><img src="assets/mowlsint-logo.png" alt="MOwlSINT Eule auf Eisberg"></header>
 <main><p class="notice">Zugriff nur für freigegebene Empfänger. Keine vertraulichen Nachrichten über ein ungeschütztes Endgerät bearbeiten. Der Browser erhält keine vertraulichen Codezuordnungen; Berechtigungen werden serverseitig geprüft. PELICAN ersetzt keine moderne Verschlüsselung.</p><article><h2>Codetafel</h2><label for="table">Freigegebene Codetafeln</label><select id="table" disabled></select><div id="status">Zugriffsrechte werden geprüft …</div></article>
-<div class="grid"><article><h2>Codieren</h2><div id="fields"></div><label for="details">Optionale Zusatzinformation</label><textarea id="details" placeholder="Bei nicht katalogisierten Meldungen ergänzen"></textarea><fieldset style="margin:12px 0;padding:12px;border:1px solid #8da4b0"><legend>Zusatzgruppen 1.5-DRAFT</legend>
-<label for="msgid">Nachrichten-ID (6 Buchstaben, optional)</label><input id="msgid" maxlength="6" placeholder="QMBRTA">
+<div class="grid"><article><h2>Codieren</h2><div id="fields"></div><label for="details">Optionale Zusatzinformation</label><textarea id="details" placeholder="Bei nicht katalogisierten Meldungen ergänzen"></textarea><fieldset class="extras"><legend>Zusatzgruppen 1.5-SECURITY-RC2</legend>
+<label for="msgid">Nachrichten-ID (6 Buchstaben, optional)</label><input id="msgid" maxlength="6" placeholder="6 Buchstaben">
 <label for="refid">Referenz-ID (6 Buchstaben, optional)</label><input id="refid" maxlength="6">
 <label for="statusfamily">Statusfamilie</label><select id="statusfamily"><option value="">Ohne Status</option><option>OPERATION</option><option>VALIDITY</option><option>EDITORIAL</option><option>VERIFICATION</option></select>
 <label for="statusvalue">Status (Wert aus FAMILY)</label><select id="statusvalue"><option value="">—</option></select>
@@ -16,8 +16,8 @@
 <article class="decoder-area"><h2>Mehrere Meldungen decodieren</h2>
 <label for="decodeInput">Eine achtstellige Gruppe je Zeile (Kennsignal am Anfang und Ende optional)</label>
 <p class="small decoder-hint"><kbd>Tab</kbd> = neue Zeile · <kbd>Enter</kbd> = neue Zeile · <kbd>Strg</kbd> + <kbd>Enter</kbd> = alle decodieren. <kbd>Shift</kbd> + <kbd>Tab</kbd> wechselt wie gewohnt das Bedienelement.</p>
-<textarea id="decodeInput" class="code-entry" rows="9" wrap="off" spellcheck="false" autocapitalize="characters" autocomplete="off" aria-describedby="decodeHelp decodeCount" placeholder="KQNIPJHA&#10;NDSXHTKJ&#10;NDHFNSNS"></textarea>
-<p id="decodeHelp" class="small">Mehrere Gruppen nacheinander eintragen. Vollständige Sendeblöcke mit Start- und Endsignal werden automatisch der freigegebenen Codetafel zugeordnet; ohne Signal gilt die oben ausgewählte Tafel. Fortsetzungsgruppen ergänzen jeweils die vorherige Hauptmeldung. Ein Punkt nach einer Gruppe ist als Sprechpause zulässig; er wird beim Decodieren ignoriert.</p>
+<textarea id="decodeInput" class="code-entry" rows="9" wrap="off" spellcheck="false" autocapitalize="characters" autocomplete="off" aria-describedby="decodeHelp decodeCount" placeholder="Acht Buchstaben je Gruppe"></textarea>
+<p id="decodeHelp" class="small">Mehrere Gruppen nacheinander eintragen. Vollständige Sendeblöcke mit Start- und Endsignal werden automatisch der freigegebenen Codetafel zugeordnet; ohne Signal gilt die oben ausgewählte Tafel. Einzelne Hauptgruppen können in mehreren Tafeln gültig sein; ohne Kennsignal ist die Tafel nicht eindeutig geprüft. Fortsetzungsgruppen ergänzen jeweils die vorherige Hauptmeldung. Ein Punkt nach einer Gruppe ist als Sprechpause zulässig; er wird beim Decodieren ignoriert.</p>
 <div id="decodeCount" class="small" role="status" aria-live="polite">0 Gruppen eingetragen · noch nicht decodiert</div>
 <button id="decode" disabled>Alle decodieren</button> <button type="button" id="clearDecode" class="button-secondary">Eingabe leeren</button>
 <div id="decoded" aria-live="polite"></div></article></div>

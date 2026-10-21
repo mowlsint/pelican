@@ -8,3 +8,14 @@
 private_books/
 PELICAN_MASTER*
 .env*
+
+node_modules/
+dist/
+.wrangler/
+*.zip
+*.pdf
+*.sqlite*
+*.db
+work/
+private*/
+*_BACKUP*

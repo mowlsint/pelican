@@ -1,17 +1,51 @@
-# PELICAN 1.5-DRAFT - UNIVERSAL PROGRAM CODE
+# MOwlSINT PELICAN 1.5 SECURITY-RC2
 
-**Ausschliesslich oeffentliche universelle Software, keine Geheimcodes.**
+Universeller Anwendungscode. Private Tafeln, Kennsignale, SQL-Datensätze und Druckbücher gehören ausschließlich in das getrennte Privatpaket.
 
-Diese Version basiert auf 1.4-RC1. Entwurfsstand, nicht produktiv einsetzen.
+**Status: lokal geprüft; Cloudflare-Staging und Produktionsfreigabe stehen aus. PR #1 bleibt Draft.**
 
-* `index.html`: Cloudflare Pages, Login/Grants mit Cloudflare Access / D1.
-* `functions/api/index.js`: Authentifizierter D1-Adapter.
-* `lib/pelican-core.mjs`: gemeinsamer Codier-/Decodierkern, ohne vertrauliche Codepaare.
-* `offline.html`: echte Einzelseiten-Offline-HTML mit lokalem, fluechtigem Dateiupload, ohne Netzwerkrequests.
-* `schema.sql`: nur oeffentliches Datenbankschema; keine Datensaetze.
+## Ausführung
 
-## Betrieb / keine automatischen Aktionen
+Node >=22.13. `npm ci`, `npm run check`, `npm test`, `npm run build`.
 
-Private `*.book.json`, `*.signals.json`, PDF-Buecher und `PELICAN_1_5_D1_PRIVATE_*.sql` befinden sich AUSSCHLIESSLICH im getrennten Privatpaket. Vor SQL-Einsatz DB sichern; erst nach Freigabe Tests in Staging. Keine Actions/Deployments ausgeloest.
+Cloudflare Pages: Buildbefehl `npm run build`; Ausgabeverzeichnis `dist`; Functions liegen im Projektwurzelverzeichnis `functions/`. Bestehende Dashboard-Einstellungen erst nach Bestandsprüfung anpassen. `dist` wird anhand einer festen Positivliste erstellt. SQL, JSON-Tafeln, PDF, Tests und Dokumentation gelangen nicht in die statischen Assets. Kein automatisches Deployment-Skript und kein produktiver Wrangler-Konfigurationswechsel enthalten.
 
-Der Webdecoder erhaelt keine Codetabellen im Browser. Die Offline-Datei nimmt beliebige Einzeltafeln und optional ihre Signaldatei entgegen. Offline-Pakete sind bei Weitergabe kopierbar; Besitz ist keine kryptografische Autorisierung.
+`jose` ist mit Lockdatei festgelegt. Für lokale Pages-Entwicklung kann ein separat installiertes Wrangler mit `npm run dev` verwendet werden; tatsächliche D1-Bindings vorher aus dem Dashboard übernehmen. Keine Datenbank-ID oder Domain wird geraten.
+
+## Architektur
+
+- `lib/pelican-core.mjs`: gemeinsamer Codec ohne private Zuordnungen.
+- `offline.html`: alleinstehende HTML mit eingebettetem, identischem Kern. `npm run sync:offline` synchronisiert den Kern und aktualisiert den CSP-Scripthash.
+- `functions/api/index.js`: Cloudflare-Access-JWT-Prüfung und D1-Grants; kein Download ganzer Tafeln.
+- `assets/app.js`: Eingabe, Mehrfachmeldungen und NATO-Sprechtext für Kokoro.
+- `schema.sql`: unverändertes leeres Datenbankschema.
+- `scripts/build.mjs`: begrenzte statische Dateiausgabe.
+- `scripts/render-codebooks.py`: vollständige private Druckbücher aus privaten Eingaben erzeugen; optionale Python-Abhängigkeiten reportlab/pypdf. Private Eingabe und Ausgabe immer außerhalb des Repositorys halten.
+
+## Sicherheitsrevision RC2
+
+Die vorherige SECURITY-RC ersetzte die sechs Nutzbuchstaben einer QW-/YY-Gruppe einzeln. Die Komposition zweier solcher Tafeln ist wiederum eine Buchstabensubstitution. Die alte Umsetzung erfüllte die verlangte Unabhängigkeit daher nicht.
+
+RC2 nutzt je Tafel eine unabhängig zufällig erzeugte Permutation der 676 Buchstabenpaare. Jedes der drei Nutzpaare wird damit umgesetzt. Vorwärts- und Rückwärtsprüfung aller Paare und Tafelvergleiche schließen einfache Caesar- sowie positionsweise Buchstabensubstitutionen in den geprüften Zuordnungen aus. Das ist **kein Beweis kryptografischer Sicherheit** und kein neuer Secure-Modus.
+
+Private Dateiedition: `1.5-SECURITY-RC2`; `special_cipher.version=2`, `special_cipher.pairs` enthält 676 unterschiedliche Paare. Alte 1.5-QW-/YY-Formate werden nicht stillschweigend übernommen. Hauptcodes, ND-Zuordnungen, Statuspaare und Kennsignale bleiben gegenüber dem gelieferten SECURITY-RC-Paket gleich.
+
+**Ohne Kennsignal ist die Tafel nicht eindeutig überprüfbar.** In acht der zehn privaten Tafelpaare existieren Hauptgruppen, die in beiden Tafeln syntaktisch gültig sind. Das folgt aus dem vorhandenen Codebestand. Ein falsch gewähltes Buch kann solche Gruppen falsch interpretieren. Signalumschlossene Blöcke werden auf das Kennsignal und online zusätzlich auf den Decode-Grant geprüft. Kennsignale sind keine kryptografische Authentisierung.
+
+## Tests
+
+`npm test` verwendet ausschließlich synthetisch erzeugte Testtafeln. Tests mit echten Tafeln laufen lokal mit `PELICAN_BOOK_DIR=/absoluter/privater/pfad npm test`. Diese Umgebung und Daten niemals in GitHub Actions hinterlegen.
+
+`node tests/check-independent-codebooks.mjs /privat/*.book.json` prüft alle Paarvergleiche für Hauptfelder, ND, Status und Sondergruppen.
+
+`npm run test:offline` benötigt Playwright, einen installierten Chromium und `PELICAN_BOOK_DIR`. Optional `PELICAN_CHROMIUM` auf eine lokale Chromium-Datei setzen; `PELICAN_PLAYWRIGHT_MODULE` erlaubt ein bereits vorhandenes Playwright-Modul. Der Browser läuft im Offline-Kontext und öffnet `file://`. Linux-Chromium wurde tatsächlich geprüft; Windows bleibt separat abzunehmen.
+
+Der Regressionstest verwendet die universelle 1.4-RC1-Implementierung vom GitHub-Basiscommit `02476afa1953c0a1ef56413bf92c01a1ebb52c56` mit den gelieferten kompatiblen Zuordnungen. Das ersetzt keine Prüfung gegen eine echte alte Produktionsdatenbank.
+
+## Betrieb und Freigabe
+
+Ein Empfänger erhält ausschließlich `BUCH_<table>.zip` und separat `SIGNAL_<table>.zip`. Das Buchpaket enthält Offline-HTML, eine Einzeltafel, deren Druckbuch und eine Anleitung. Der Master ist niemals ein Empfängerpaket. Importdateien sind kopierbar; Besitz entspricht keiner technisch durchsetzbaren Personenautorisierung. Prüfsummen über einen vertrauenswürdigen zweiten Kanal abgleichen.
+
+Online bleiben `PELICAN_DB`, `CF_ACCESS_ISSUER` und `CF_ACCESS_AUD` erforderlich. Die API prüft die D1-Revisionsmarkierung und verweigert eine unpassende Datenbank mit 503. Alle aktiven Encode-/Decode-Grants gelten getrennt. Fehlerantworten enthalten keine internen Ausnahmen oder aufgelösten Sondergruppen.
+
+Cloudflare-Bestandsaufnahme, echter Remote-Backup, Wiederherstellung in separater D1, Access-Schutz aller Domains, Migration echter Altstrukturen und Produktionsfreigabe sind verpflichtende offene Schritte. Siehe [DEPLOYMENT_AND_ROLLBACK.md](DEPLOYMENT_AND_ROLLBACK.md) und [VALIDATION.md](VALIDATION.md).

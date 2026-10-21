@@ -15,8 +15,8 @@ function printBlock(){
   $('broadcastSpoken').textContent=frames.length?[signal,...frames,signal].map(g=>[...g].map(c=>NATO[c]).join(' ')+'.').join('\n'):'Noch keine Meldungen.';
 } 
 async function init(){try{config=await api();$('table').replaceChildren();for(const t of config.tables){const o=new Option(t.table_id.replaceAll('_',' '),t.table_id);$('table').append(o)}$('table').value=config.defaultTable;$('table').disabled=false;const holder=$('fields');for(const [k,title] of FIELDS){const label=document.createElement('label');label.textContent=title;label.htmlFor='f-'+k;holder.append(label);const sel=document.createElement('select');sel.id='f-'+k;for(const d of config.catalog[k])sel.add(new Option(d.de,d.id));holder.append(sel)}$('status').textContent='Zugriff freigegeben · Codetafeln bleiben serverseitig';setButtons();}catch(e){err(e.message)}}
-$('table').addEventListener('change',()=>{frames=[];lastFrames=[];$('encoded').textContent='–';$('speak').textContent='';setButtons();printBlock()});
-$('encode').onclick=async()=>{try{const fields=Object.fromEntries(FIELDS.map(([k])=>[k,$('f-'+k).value]));const r=await api({operation:'encode',table:$('table').value,fields,details:$('details').value,...extras()});lastFrames=r.frames;$('encoded').textContent=r.frames.join('\n');$('speak').textContent=r.spoken.map(group=>group+'.').join('\n');setButtons()}catch(e){err(e.message)}};
+$('table').addEventListener('change',()=>{frames=[];lastFrames=[];$('decoded').replaceChildren();$('encoded').textContent='–';$('speak').textContent='';setButtons();printBlock()});
+$('encode').onclick=async()=>{lastFrames=[];$('encoded').textContent='–';$('speak').textContent='';setButtons();try{const fields=Object.fromEntries(FIELDS.map(([k])=>[k,$('f-'+k).value]));const r=await api({operation:'encode',table:$('table').value,fields,details:$('details').value,...extras()});lastFrames=r.frames;$('encoded').textContent=r.frames.join('\n');$('speak').textContent=r.spoken.map(group=>group+'.').join('\n');setButtons()}catch(e){err(e.message)}};
 // Tab inside the input moves to the next code line; Shift+Tab retains keyboard accessibility.
 const decodeInput=$('decodeInput');
 function decodeCount(){
@@ -46,7 +46,7 @@ $('decode').onclick=async()=>{
     const r=await api({operation:'decode',table:$('table').value,input:decodeInput.value});
     if(r.tableId && r.tableId!==$('table').value){
       $('table').value=r.tableId;
-      frames=[];lastFrames=[];$('encoded').textContent='–';$('speak').textContent='';
+      frames=[];lastFrames=[];$('decoded').replaceChildren();$('encoded').textContent='–';$('speak').textContent='';
       setButtons();printBlock();
     }
     for(let i=0;i<r.messages.length;i++){
@@ -64,7 +64,7 @@ $('decode').onclick=async()=>{
     err(e.message);
   }
 };
-$('add').onclick=()=>{frames.push(...lastFrames);lastFrames=[];setButtons();printBlock()};$('clear').onclick=()=>{frames=[];printBlock()};$('copy').onclick=async()=>{if(frames.length)await navigator.clipboard.writeText($('broadcast').textContent)};
+$('add').onclick=()=>{frames.push(...lastFrames);lastFrames=[];setButtons();printBlock()};$('clear').onclick=()=>{frames=[];lastFrames=[];$('encoded').textContent='–';$('speak').textContent='';setButtons();printBlock()};$('copy').onclick=async()=>{if(frames.length)await navigator.clipboard.writeText($('broadcast').textContent)};
 $('copySpoken').onclick=async()=>{if(frames.length)await navigator.clipboard.writeText($('broadcastSpoken').textContent)};
 decodeCount();init();
 

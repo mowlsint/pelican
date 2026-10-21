@@ -14,6 +14,7 @@ const books = fileNames.map(filename => {
   PelicanCore.validateBook(book);
   return book;
 });
+if(new Set(books.map(b=>JSON.stringify(b.special_cipher.pairs))).size!==books.length)throw Error('SPECIAL table reused');
 const fields = ['sea', 'object', 'event', 'admiralty'];
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const shift = (a, b) => (alphabet.indexOf(b) - alphabet.indexOf(a) + 26) % 26;
@@ -44,12 +45,17 @@ for (let i = 0; i < books.length; i++) {
     if (ndPairs.some(([,code])=>typeof code!=='string')) throw new Error('ND token missing');
     const ndDeltas=ndPairs.map(([x,y])=>[shift(x[0],y[0]),shift(x[1],y[1])]);
     const ndShift=ndDeltas.every(([x,y])=>x===ndDeltas[0][0]&&y===ndDeltas[0][1]);
+    const positional=(pairs)=>[0,1].some(k=>{const m=new Map();let possible=true;for(const [x,y] of pairs){if(m.has(x[k])&&m.get(x[k])!==y[k])possible=false;m.set(x[k],y[k])}return possible});
+    const specialPairs=a.special_cipher.pairs.map((x,i)=>[x,b.special_cipher.pairs[i]]);
+    const statusPairs=['families','statuses','time_qualifiers'].flatMap(k=>Object.entries(a.status_protocol[k]).map(([id,x])=>[x,b.status_protocol[k][id]]));
+    const specialSubstitution=positional(specialPairs),ndSubstitution=positional(ndPairs),statusSubstitution=positional(statusPairs);
+    const perFieldDerivable=fields.some(f=>positional(Object.entries(a.sections[f]).map(([id,x])=>[x,b.sections[f][id]])));
     const result={tables:[a.table_id,b.table_id],mainConcepts:pairs.length,
       identicalConceptCodes:pairs.filter(([x,y])=>x===y).length,
       distinctShiftVectors:new Set(deltas.map(x=>x.join(','))).size,
       caesarDerivable:oneShift,positionSubstitutionDerivable:substitutionPossible,
-      ndTokenCount:ndPairs.length,ndCaesarDerivable:ndShift};
-    if(oneShift||substitutionPossible||ndShift) throw new Error('Unsafe derivation found: '+JSON.stringify(result));
+      ndTokenCount:ndPairs.length,ndCaesarDerivable:ndShift,ndPositionSubstitutionDerivable:ndSubstitution,specialPositionSubstitutionDerivable:specialSubstitution,statusPositionSubstitutionDerivable:statusSubstitution,perFieldPositionSubstitutionDerivable:perFieldDerivable};
+    if(oneShift||substitutionPossible||ndShift||specialSubstitution||ndSubstitution||statusSubstitution||perFieldDerivable) throw new Error('Unsafe derivation found: '+JSON.stringify(result));
     results.push(result);
   }
 }
