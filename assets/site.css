@@ -6,3 +6,5 @@
 .decoded-message{margin-top:12px;padding:12px 14px;border:1px solid #cbd6e0;border-left:4px solid #b89b55;border-radius:6px;background:#f5f8fb}
 .decoded-message p{margin:7px 0 0}.decoded-message strong{font:700 14px ui-monospace,monospace}
 .error{color:#a12828;font-weight:600}.button-secondary{background:#546474}#decodeCount{margin:9px 0;font-weight:600}
+
+.extras{margin:12px 0;padding:12px;border:1px solid #8da4b0}

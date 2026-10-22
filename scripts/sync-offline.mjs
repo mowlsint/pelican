@@ -1,0 +1,12 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+const core=readFileSync(new URL('../lib/pelican-core.mjs',import.meta.url),'utf8').replace(/^export /,'');
+const p=new URL('../offline.html',import.meta.url);let html=readFileSync(p,'utf8');
+const start=html.indexOf('const PelicanCore='),end=html.indexOf("\n'use strict';",html.indexOf('\n})();',start));
+if(start<0||end<0)throw Error('Offline core markers missing');
+html=html.slice(0,start)+core+html.slice(end);
+const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];
+const csp=`default-src 'none'; script-src 'sha256-${createHash('sha256').update(script).digest('base64')}'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'`;
+html=html.replace(/<meta http-equiv="Content-Security-Policy"[^>]*>/,'');
+html=html.replace('<head>','<head><meta http-equiv="Content-Security-Policy" content="'+csp+'">');
+writeFileSync(p,html);

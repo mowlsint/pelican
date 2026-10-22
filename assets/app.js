@@ -4,6 +4,9 @@ const NATO={A:'ALFA',B:'BRAVO',C:'CHARLIE',D:'DELTA',E:'ECHO',F:'FOXTROT',G:'GOL
 const $=x=>document.getElementById(x);let config=null;let frames=[];let lastFrames=[];
 async function api(payload){const response=await fetch('/api/',payload?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),cache:'no-store'}:{cache:'no-store'});let result=await response.json();if(!response.ok)throw Error(result.error||'Fehler');return result;}
 function err(message){$('status').textContent=message;$('status').style.color='#a12828';}
+const STATUS_VALUES={OPERATION:['ANNOUNCED','COMMENCED','IN_PROGRESS','COMPLETED','POSTPONED','CANCELLED','EXTENDED','RESCHEDULED'],VALIDITY:['EFFECTIVE','EXPIRED'],EDITORIAL:['PRELIMINARY_REPORT','UPDATE','CORRECTION','RETRACTION'],VERIFICATION:['CONFIRMED','NOT_CONFIRMED']};
+function setStatusValues(){const f=$('statusfamily').value;const e=$('statusvalue');e.replaceChildren();e.add(new Option('—',''));for(const x of STATUS_VALUES[f]||[])e.add(new Option(x,x))};$('statusfamily').onchange=setStatusValues;
+function extras(){const fam=$('statusfamily').value, val=$('statusvalue').value;const raw=$('specials').value.trim();const specials=raw?JSON.parse(raw):[];if(!Array.isArray(specials))throw Error('Sondergruppen müssen eine JSON-Liste sein');if($('unicode').value.trim())specials.push({type:'unicode',actor:'A',kind:'N',value:$('unicode').value});return {id:$('msgid').value.trim().toUpperCase()||undefined,reference:$('refid').value.trim().toUpperCase()||undefined,statuses:fam?[{family:fam,value:val,time:$('statustime').value}]:[],specials}};
 function setButtons(){const grant=config.tables.find(x=>x.table_id===$('table').value);$('encode').disabled=!grant?.can_encode;$('decode').disabled=!grant?.can_decode;$('add').disabled=!lastFrames.length;}
 function printBlock(){
   const signal=config?.tables.find(x=>x.table_id===$('table').value)?.signal;
@@ -12,8 +15,8 @@ function printBlock(){
   $('broadcastSpoken').textContent=frames.length?[signal,...frames,signal].map(g=>[...g].map(c=>NATO[c]).join(' ')+'.').join('\n'):'Noch keine Meldungen.';
 } 
 async function init(){try{config=await api();$('table').replaceChildren();for(const t of config.tables){const o=new Option(t.table_id.replaceAll('_',' '),t.table_id);$('table').append(o)}$('table').value=config.defaultTable;$('table').disabled=false;const holder=$('fields');for(const [k,title] of FIELDS){const label=document.createElement('label');label.textContent=title;label.htmlFor='f-'+k;holder.append(label);const sel=document.createElement('select');sel.id='f-'+k;for(const d of config.catalog[k])sel.add(new Option(d.de,d.id));holder.append(sel)}$('status').textContent='Zugriff freigegeben · Codetafeln bleiben serverseitig';setButtons();}catch(e){err(e.message)}}
-$('table').addEventListener('change',()=>{frames=[];lastFrames=[];$('encoded').textContent='–';$('speak').textContent='';setButtons();printBlock()});
-$('encode').onclick=async()=>{try{const fields=Object.fromEntries(FIELDS.map(([k])=>[k,$('f-'+k).value]));const r=await api({operation:'encode',table:$('table').value,fields,details:$('details').value});lastFrames=r.frames;$('encoded').textContent=r.frames.join('\n');$('speak').textContent=r.spoken.map(group=>group+'.').join('\n');setButtons()}catch(e){err(e.message)}};
+$('table').addEventListener('change',()=>{frames=[];lastFrames=[];$('decoded').replaceChildren();$('encoded').textContent='–';$('speak').textContent='';setButtons();printBlock()});
+$('encode').onclick=async()=>{lastFrames=[];$('encoded').textContent='–';$('speak').textContent='';setButtons();try{const fields=Object.fromEntries(FIELDS.map(([k])=>[k,$('f-'+k).value]));const r=await api({operation:'encode',table:$('table').value,fields,details:$('details').value,...extras()});lastFrames=r.frames;$('encoded').textContent=r.frames.join('\n');$('speak').textContent=r.spoken.map(group=>group+'.').join('\n');setButtons()}catch(e){err(e.message)}};
 // Tab inside the input moves to the next code line; Shift+Tab retains keyboard accessibility.
 const decodeInput=$('decodeInput');
 function decodeCount(){
@@ -43,7 +46,7 @@ $('decode').onclick=async()=>{
     const r=await api({operation:'decode',table:$('table').value,input:decodeInput.value});
     if(r.tableId && r.tableId!==$('table').value){
       $('table').value=r.tableId;
-      frames=[];lastFrames=[];$('encoded').textContent='–';$('speak').textContent='';
+      frames=[];lastFrames=[];$('decoded').replaceChildren();$('encoded').textContent='–';$('speak').textContent='';
       setButtons();printBlock();
     }
     for(let i=0;i<r.messages.length;i++){
@@ -51,7 +54,7 @@ $('decode').onclick=async()=>{
       const entry=document.createElement('section');entry.className='decoded-message';
       const heading=document.createElement('strong');heading.textContent='Meldung '+(i+1)+' · '+m.frame;entry.append(heading);
       const p=document.createElement('p');p.textContent=Object.values(m.fields).join(' · ');entry.append(p);
-      if(m.details){const extra=document.createElement('p');extra.className='small';extra.textContent='Zusatzinformation: '+m.details;entry.append(extra)}
+      if(m.id){const r=document.createElement('p');r.textContent='Meldungs-ID: '+m.id+(m.reference?' · Referenz: '+m.reference:'');entry.append(r)}if(m.statuses?.length || m.specials?.length || m.unicode?.length){const e=document.createElement('pre');e.textContent=JSON.stringify({statuses:m.statuses,specials:m.specials,unicode:m.unicode},null,2);entry.append(e)}if(m.details){const extra=document.createElement('p');extra.className='small';extra.textContent='Zusatzinformation: '+m.details;entry.append(extra)}
       el.append(entry);
     }
     $('decodeCount').textContent=r.totalFrames+' Gruppe(n) verarbeitet · '+r.messages.length+' Hauptmeldung(en) decodiert';
@@ -61,7 +64,7 @@ $('decode').onclick=async()=>{
     err(e.message);
   }
 };
-$('add').onclick=()=>{frames.push(...lastFrames);lastFrames=[];setButtons();printBlock()};$('clear').onclick=()=>{frames=[];printBlock()};$('copy').onclick=async()=>{if(frames.length)await navigator.clipboard.writeText($('broadcast').textContent)};
+$('add').onclick=()=>{frames.push(...lastFrames);lastFrames=[];setButtons();printBlock()};$('clear').onclick=()=>{frames=[];lastFrames=[];$('encoded').textContent='–';$('speak').textContent='';setButtons();printBlock()};$('copy').onclick=async()=>{if(frames.length)await navigator.clipboard.writeText($('broadcast').textContent)};
 $('copySpoken').onclick=async()=>{if(frames.length)await navigator.clipboard.writeText($('broadcastSpoken').textContent)};
 decodeCount();init();
 

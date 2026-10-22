@@ -4,3 +4,10 @@
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Content-Security-Policy: default-src 'self'; img-src 'self'; connect-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'
+
+# Offline document enforces its own hash-based CSP, including connect-src none.
+/offline.html
+  ! Content-Security-Policy
+
+/offline
+  ! Content-Security-Policy
