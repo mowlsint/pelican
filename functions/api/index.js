@@ -50,7 +50,7 @@ export async function onRequest({request,env}){
   try{
    // Validate only authorised books; never return their mappings.
    const loaded=await Promise.all(allowed.map(async g=>({grant:g,...await loadBook(env,g.table_id)})));
-   const tables=loaded.map(x=>({...x.grant,signal:x.signal}));
+   const tables=loaded.map(x=>({...x.grant,table_name:C.tableName(x.grant.table_id,x.book.table_name),signal:x.signal}));
    return respond({version:C.REVISION,tables,defaultTable:tables[0].table_id,catalog:loaded[0].book.catalog});
   }catch{return reject('Codetafeln vorübergehend nicht verfügbar',503)}
  }

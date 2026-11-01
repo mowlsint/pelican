@@ -50,7 +50,7 @@ def digraph_page(b):
  c.setFont('Helvetica',8);c.drawString(38,34,'MOwlSINT PELICAN | SECURITY-RC2 | nur an autorisierte Empfaenger');c.drawRightString(W-38,34,'Anhang');c.save();return PdfReader(BytesIO(buf.getvalue())).pages[0]
 
 for path in sorted(Path(args.books).glob('*.book.json')):
- b=json.loads(path.read_text());buf=BytesIO();story=[]
+ b=json.loads(path.read_text());b['table_name']='Sint Maarten' if b['table_id'] in ('sint_maarte','sint_maarten') else b['table_name'];buf=BytesIO();story=[]
  def table(head,rows,widths):
   data=[[P(x,'CellDV') for x in head]]+[[P(x,'CellDV') for x in row] for row in rows]
   t=Table(data,colWidths=widths,repeatRows=1,hAlign='LEFT');t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),colors.HexColor('#dce5e9')),('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.HexColor('#f1f4f6')]),('VALIGN',(0,0),(-1,-1),'TOP'),('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),5),('LINEBELOW',(0,0),(-1,0),.6,colors.HexColor('#718794'))]));story.append(t)
@@ -93,7 +93,7 @@ for path in sorted(Path(args.books).glob('*.book.json')):
  writer=PdfWriter();reader=PdfReader(BytesIO(buf.getvalue()))
  for page in reader.pages:writer.add_page(page)
  writer.add_page(PdfReader(Path(args.digraph_pages)/(b['table_id']+'.pdf')).pages[0] if args.digraph_pages else digraph_page(b));writer.add_metadata({'/Title':'PELICAN SECURITY-RC2 - '+b['table_name'],'/Subject':'Complete private receiver book without signal'})
- target=out/(b['table_id']+'.druckbuch.pdf')
+ target=out/(('sint_maarten' if b['table_id']=='sint_maarte' else b['table_id'])+'.druckbuch.pdf')
  with target.open('wb') as f:writer.write(f)
  printed='\n'.join(x.extract_text() for x in PdfReader(target).pages)
  for k in b['sections']:

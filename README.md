@@ -2,7 +2,7 @@
 
 Universeller Anwendungscode. Private Tafeln, Kennsignale, SQL-Datensätze und Druckbücher gehören ausschließlich in das getrennte Privatpaket.
 
-**Status: lokal geprüft; Cloudflare-Staging und Produktionsfreigabe stehen aus. PR #1 bleibt Draft.**
+**Stand 01.11.2026: lokal geprüfte RC2-Wartungsfassung; Cloudflare-Staging und Produktionsfreigabe stehen aus. PR #1 ist seit 22.10.2026 gemergt. Der aktuelle GitHub-main-Stand ist a60d650aa99ec57b6682c9470fc5ac2dd082918e; ein produktives Pages-Deployment ist damit nicht nachgewiesen.**
 
 ## Ausführung
 
@@ -49,3 +49,15 @@ Ein Empfänger erhält ausschließlich `BUCH_<table>.zip` und separat `SIGNAL_<t
 Online bleiben `PELICAN_DB`, `CF_ACCESS_ISSUER` und `CF_ACCESS_AUD` erforderlich. Die API prüft die D1-Revisionsmarkierung und verweigert eine unpassende Datenbank mit 503. Alle aktiven Encode-/Decode-Grants gelten getrennt. Fehlerantworten enthalten keine internen Ausnahmen oder aufgelösten Sondergruppen.
 
 Cloudflare-Bestandsaufnahme, echter Remote-Backup, Wiederherstellung in separater D1, Access-Schutz aller Domains, Migration echter Altstrukturen und Produktionsfreigabe sind verpflichtende offene Schritte. Siehe [DEPLOYMENT_AND_ROLLBACK.md](DEPLOYMENT_AND_ROLLBACK.md) und [VALIDATION.md](VALIDATION.md).
+
+## Wartungsfassung vom 01.11.2026
+
+Die Tafel heißt Sint Maarten. Oberfläche und API zeigen den korrigierten Namen auch bei alten importierten Dateien. Neue Empfängerdateien heißen `sint_maarten.book.json`, `sint_maarten.signals.json` und `sint_maarten.druckbuch.pdf`. Die interne ID `sint_maarte` bleibt erhalten, damit vorhandene Grants und Importe kompatibel bleiben. Keine Codezuordnung oder Kennsignale wurden geändert.
+
+Der Decoder erhält führendes Unicode U+FEFF jetzt verlustfrei. Beim Import werden fehlende Statusfamilien/-werte, fehlender NONE-Zeitbezug und Kollisionen zwischen dem tafelspezifischen Fortsetzungspräfix und Seeraumcodes abgewiesen. Die Fortsetzungspräfixe anderer Tafeln werden unverändert verwendet; ND ist nicht für jede Tafel das tatsächliche Präfix. Das Funkformat bleibt SECURITY-RC2.
+
+Der Offline-Browsertest akzeptiert optional `PELICAN_CHROMIUM_ARGS` als JSON-Liste für lokale Browserparameter. Diese Einstellungen betreffen ausschließlich Tests.
+
+Cloudflare hat den sicheren Anmeldeversuch dieses Work-Browsers am 01.11.2026 mit einem Login-API-Fehler 403 abgewiesen. Solange die automatische Branch-Veröffentlichung und Access-Abdeckung unbekannt sind, wird kein Branch verschoben und kein Deployment ausgelöst. Ein vorbereiteter Git-Commit ohne Branchänderung ist keine veröffentlichte Anwendung.
+
+Zusätzliche Online-Oberflächenkorrektur: verspätete Encode-/Decode-Antworten werden nach Tafelwechsel oder Leeren verworfen. Dadurch gelangen keine veralteten Gruppen unter das Kennsignal einer inzwischen gewählten anderen Tafel. Synthetische Browsertests prüfen normalen Betrieb sowie die Antwortreihenfolge; das ist kein Live-Access-Test.

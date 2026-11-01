@@ -23,7 +23,7 @@ test('Real RS256 verification, issuer, audience, expiry and active grants',async
  assert.equal((await call(null)).status,401);
  for(const opts of [{jwt:'invalid'},{aud:'wrong'},{issuer:'https://wrong.cloudflareaccess.com'},{exp:946684800}])assert.equal((await call('both@example.invalid',undefined,opts)).status,401);
  for(const user of ['missing','inactive','zero'])assert.equal((await call(user+'@example.invalid')).status,403);
- const ok=await call('BOTH@example.invalid');assert.equal(ok.status,200);assert.equal(ok.body.tables.length,2);assert.match(ok.headers.get('cache-control'),/no-store/);
+ const ok=await call('BOTH@example.invalid');assert.equal(ok.status,200);assert.equal(ok.body.tables.length,2);for(const t of ok.body.tables)assert.equal(t.table_name,C.tableName(t.table_id));assert.match(ok.headers.get('cache-control'),/no-store/);
  const text=JSON.stringify(ok.body);for(const key of ['sections','extension','special_cipher','pairs','status_protocol'])assert(!text.includes('"'+key+'"'));
  assert.equal((await call('both@example.invalid',undefined,{method:'DELETE'})).status,405);
 });

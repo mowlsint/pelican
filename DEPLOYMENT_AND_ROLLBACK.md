@@ -1,6 +1,6 @@
 # Kontrollierter Übergang und Rückfall
 
-Stand 21.10.2026. **Keine produktive Umschaltung freigegeben oder ausgeführt.**
+Stand 01.11.2026. **Keine produktive Umschaltung freigegeben oder ausgeführt.**
 
 ## Tatsächlich bekannte Basis
 
@@ -8,7 +8,7 @@ Repository: https://github.com/mowlsint/pelican
 
 PR: https://github.com/mowlsint/pelican/pull/1
 
-Produktiver GitHub-Basiscommit bei Bestandsaufnahme: `02476afa1953c0a1ef56413bf92c01a1ebb52c56`. Das beweist keinen Cloudflare-Deploymentstand. Pages-Projekt, produktive Domain, tatsächlicher Commit, D1-ID, Preview-Bindings und Access-AUD sind noch nicht aus dem Dashboard ermittelt. Der Cloud Browser zeigte eine Cloudflare-Anmeldeseite.
+GitHub-main bei erneuter Bestandsaufnahme: `a60d650aa99ec57b6682c9470fc5ac2dd082918e`; PR #1 wurde am 22.10.2026 gemergt. Der ursprüngliche 1.4-Basiscommit war `02476afa1953c0a1ef56413bf92c01a1ebb52c56`. Das beweist keinen Cloudflare-Deploymentstand. Pages-Projekt, produktive Domain, tatsächlicher Commit, D1-ID, Preview-Bindings und Access-AUD sind noch nicht aus dem Dashboard ermittelt. Der sichere Cloudflare-Anmeldeversuch wurde mit Login-API-Fehler 403 abgewiesen.
 
 Keine Produktions- oder Preview-Domain, Datenbankbezeichnung oder UUID in diesem Dokument ist vorgegeben.
 
@@ -39,7 +39,7 @@ Empfohlene anschließend zu prüfende Reihenfolge:
 
 1. Schreib-/Sendebetrieb im abgestimmten Wartungsfenster pausieren und letzte Änderungen an Grants erfassen. Erneuten verifizierten Backup erstellen.
 2. Produktions-D1 migrieren, während die bisherige Anwendung noch bereitsteht. Der alte 1.4-Handler liest seine bisherigen Schlüssel weiter; diese Kompatibilität muss zuvor mit dem echten Staging-Export bestätigt sein.
-3. Erst nach Datenprüfung PR nach `main` übernehmen und das verifizierte Pages-Deployment veröffentlichen. Bestehende Build-Einstellungen müssen `npm run build` / `dist` nutzen; geänderte Branch-Konfiguration nicht gleichzeitig unkontrolliert aktivieren.
+3. Erst nach Datenprüfung den neuen Wartungsstand übernehmen und das verifizierte Pages-Deployment veröffentlichen; PR #1 ist bereits gemergt und darf nicht als noch ausstehender Merge eingeplant werden. Bestehende Build-Einstellungen müssen `npm run build` / `dist` nutzen; geänderte Branch-Konfiguration nicht gleichzeitig unkontrolliert aktivieren.
 4. RC2-HTML und RC2-Tafeln/Signaldateien gemeinsam an autorisierte Empfänger verteilen. Alte 1.5-Sondergruppen nicht mischen.
 5. Live-Smoke-Tests über echten Access-Zugang durchführen und Freigabe dokumentieren.
 

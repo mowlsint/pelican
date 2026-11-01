@@ -3,7 +3,7 @@ const {chromium}=await import(process.env.PELICAN_PLAYWRIGHT_MODULE||'playwright
 if(!process.env.PELICAN_BOOK_DIR)throw Error('Set PELICAN_BOOK_DIR to a private directory; never put its contents in this repository');
 const dir=resolve(process.env.PELICAN_BOOK_DIR),html=resolve(process.env.PELICAN_OFFLINE_HTML||'offline.html');
 const names=readdirSync(dir).filter(x=>x.endsWith('.book.json')).sort();assert.equal(names.length,5);
-const browser=await chromium.launch({headless:true,...(process.env.PELICAN_CHROMIUM?{executablePath:process.env.PELICAN_CHROMIUM,args:['--no-sandbox','--disable-gpu','--single-process','--no-zygote']}:{})});
+const browser=await chromium.launch({headless:true,...(process.env.PELICAN_CHROMIUM?{executablePath:process.env.PELICAN_CHROMIUM,args:['--no-sandbox','--disable-gpu','--single-process','--no-zygote',...(process.env.PELICAN_CHROMIUM_ARGS?JSON.parse(process.env.PELICAN_CHROMIUM_ARGS):[])]}:{})});
 const context=await browser.newContext({offline:true});const page=await context.newPage(),errors=[],network=[];
 page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))network.push(r.url())});
 const temp=mkdtempSync(tmpdir()+'/pelican-offline-');let passed=0;
