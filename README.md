@@ -4,6 +4,10 @@ Universeller Anwendungscode. Private Tafeln, Kennsignale, SQL-Datensätze und Dr
 
 **Stand 01.11.2026: lokal geprüfte RC2-Wartungsfassung; Cloudflare-Staging und Produktionsfreigabe stehen aus. PR #1 ist seit 22.10.2026 gemergt. Der aktuelle GitHub-main-Stand ist a60d650aa99ec57b6682c9470fc5ac2dd082918e; ein produktives Pages-Deployment ist damit nicht nachgewiesen.**
 
+## Öffentliche Station über GitHub Pages
+
+Die öffentliche Station verwendet lokale Buch- und Signalimporte. Veröffentlichung: Branch `public-pages`, Ordner `/docs`. Erzeugen mit `npm run build:pages`; Startdatei ist `docs/index.html`, die herunterladbare Einzeldatei ist `docs/offline.html`. Private Tafeln und Signale werden nicht mitveröffentlicht. Siehe [GITHUB_PAGES.md](GITHUB_PAGES.md). Der Cloudflare/D1-Adapter bleibt als getrennter Betriebsweg erhalten.
+
 ## Ausführung
 
 Node >=22.13. `npm ci`, `npm run check`, `npm test`, `npm run build`.

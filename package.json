@@ -12,7 +12,8 @@
     "sync:offline": "node scripts/sync-offline.mjs",
     "build": "node scripts/sync-offline.mjs && node scripts/build.mjs",
     "test:offline": "node tests/browser/offline.e2e.mjs",
-    "dev": "wrangler pages dev dist"
+    "dev": "wrangler pages dev dist",
+    "build:pages": "node scripts/sync-offline.mjs && node scripts/build-github-pages.mjs"
   },
   "engines": {
     "node": ">=22.13.0"
