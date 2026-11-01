@@ -33,6 +33,9 @@ try{
  await page.locator('#table').selectOption('sint_maarte');
  await pending.fulfill({json:{messages:[{frame:'ABCDEFGH',fields:{sea:'Synthetic'}}],totalFrames:1,tableId:'barbados'}});
  await page.waitForLoadState('networkidle');assert.equal(await page.locator('#table').inputValue(),'sint_maarte');assert.equal(await page.locator('#decoded').innerText(),'');checks++;
+ await page.locator('#decodeInput').fill('ABCDEFGH');wait=nextRequest();await page.locator('#decode').click();await wait;
+ await pending.fulfill({json:{messages:[{frame:'ABCDEFGH',fields:{sea:'Synthetic'},unicode:[{value:'<img src=x onerror=alert(1)>'}]}],text:'Volltext: Gdańsk 香港\n<img src=x onerror=alert(1)>',totalFrames:1,tableId:'sint_maarte'}});
+ await page.waitForLoadState('networkidle');assert.match(await page.locator('.decoded-fulltext').innerText(),/Volltext: Gdańsk 香港/);assert.equal(await page.locator('#decoded img').count(),0);assert.equal(await page.locator('#decoded details').evaluate(e=>e.open),false);checks++;
  assert.deepEqual(errors,[]);checks++;
  console.log(JSON.stringify({outcome:'PASS',checks,browser:await browser.version(),privateDataUsed:false,scope:'Synthetic local UI only; delayed replies after table change/clear'}));
 }finally{await browser.close()}

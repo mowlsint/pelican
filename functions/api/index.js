@@ -75,6 +75,7 @@ export async function onRequest({request,env}){
    const frames=C.encodeMessage(book,{fields:body.fields,id:body.id,reference:body.reference,statuses:body.statuses,specials:body.specials,details:body.details});
    return respond({frames,spoken:frames.map(C.speech),signal,broadcast:C.wrapBroadcast(frames,signal)});
   }
-  return respond({...C.decodeBlock(book,body.input,signal),tableId:chosen,signalDetected:detected});
+  const decoded=C.decodeBlock(book,body.input,signal);
+  return respond({...decoded,text:C.formatDecodedBlock(decoded,book),tableId:chosen,signalDetected:detected});
  }catch{return reject('Anfrage abgelehnt. Eingaben, Vollständigkeit und Codetafel prüfen.',400)}
 }

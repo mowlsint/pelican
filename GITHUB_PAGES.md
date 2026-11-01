@@ -12,6 +12,8 @@ Die Datei `index.html` im Repository-Wurzelverzeichnis gehört weiterhin zum get
 
 ## Nutzung
 
+**1.5.0-rc.2.3:** Decodierte Meldungen erscheinen standardmäßig als lesbarer Volltext mit allen übertragenen Zusatzangaben. Mehrere Meldungen stehen getrennt untereinander. Die bisherigen technischen Daten bleiben unter „Technische Daten (JSON)“ aufklappbar. Offline-Datei und öffentliche Station verwenden denselben Formatter; der getrennte Cloudflare-Adapter nutzt ihn ebenfalls. Die Ausgabe ergänzt keine beim Codieren ausgelassenen Angaben.
+
 App-Wartungsstand **1.5.0-rc.2.2**: Importstatus steht direkt bei den sichtbaren Dateifeldern. Tafel- und Kennsignalimporte werden in ihrer Reihenfolge verarbeitet und können sich nicht mehr gegenseitig überschreiben. Fehlerhafte Mehrfachimporte verändern den bisherigen Bestand nicht.
 
 Unterstützt werden ausschließlich Einzeltafeln und separate Kennsignale der Edition **1.5-SECURITY-RC2**. Das private ZIP zuerst entpacken und Dateien aus `PRIVATE/` wählen: `*.book.json` für Tafeln, `*.signals.json` für Kennsignale. PDF-Druckbücher und die Masterdaten sind keine importierbaren Einzeltafeln. Ältere DRAFT-Editionen werden ausdrücklich abgewiesen; das bloße Ändern des Editionsfelds ist keine Migration.

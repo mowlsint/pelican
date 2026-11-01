@@ -19,8 +19,8 @@ try{
   await page.locator('#encode').click();assert.match(await page.locator('#state').innerText(),/Nachricht erstellt/);
   const wire=await page.locator('#out').innerText();assert.equal(wire.split('\n')[0],JSON.parse(readFileSync(signalPath)).signal);
   assert.match(await page.locator('#spoken').innerText(),/\bALFA\b|\bBRAVO\b|\bCHARLIE\b/);passed++;
-  await page.locator('#input').fill(wire);await page.locator('#decode').click();const decoded=JSON.parse(await page.locator('#decoded').innerText());assert.equal(decoded.messages[0].unicode[0].value,'ÄÖÜ Gdańsk Łódź Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch Санкт-Петербург 香港 😀');assert.equal(decoded.messages[0].specials.find(s=>s.type==='position').lat.frac,75);passed++;
-  await page.locator('#unload').click();assert.equal(await page.locator('#table option').count(),0);assert.equal(await page.locator('#input').inputValue(),'');assert.equal(await page.locator('#decoded').innerText(),'–');passed++;
+  await page.locator('#input').fill(wire);await page.locator('#decode').click();const decoded=JSON.parse(await page.locator('#decoded').textContent());assert.equal(decoded.messages[0].unicode[0].value,'ÄÖÜ Gdańsk Łódź Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch Санкт-Петербург 香港 😀');assert.equal(decoded.messages[0].specials.find(s=>s.type==='position').lat.frac,75);assert(await page.locator('#decodedText').isVisible());assert.match(await page.locator('#decodedText').innerText(),/Gdańsk Łódź/);assert.match(await page.locator('#decodedText').innerText(),/58° 25,75′ N/);assert.equal(await page.locator('#decodedTechnical').evaluate(e=>e.open),false);passed++;
+  await page.locator('#unload').click();assert.equal(await page.locator('#table option').count(),0);assert.equal(await page.locator('#input').inputValue(),'');assert.equal(await page.locator('#decoded').textContent(),'–');passed++;
   await page.locator('#input').fill(wire);await page.locator('#decode').click();assert.match(await page.locator('#state').innerText(),/abgelehnt/);passed++;
  }
  // Atomic multi-import: one bad file must not partially load a valid companion.

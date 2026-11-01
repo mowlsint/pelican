@@ -31,6 +31,7 @@ test('Operation-specific and cross-table authorisation, signed signal detection'
  const payload={operation:'encode',table:b.table_id,fields:fields(b),details:'TEST 123',specials:[{type:'unicode',value:'Gdańsk 香港'}]};
  const encoded=await call('both@example.invalid',payload);assert.equal(encoded.status,200);
  const decoded=await call('reader@example.invalid',{operation:'decode',table:b.table_id,input:encoded.body.broadcast});assert.equal(decoded.status,200);assert.equal(decoded.body.messages[0].unicode[0].value,'Gdańsk 香港');
+ assert.match(decoded.body.text,/Gdańsk 香港/);assert.match(decoded.body.text,/Zusatzinformation: TEST 123/);
  assert.equal((await call('reader@example.invalid',payload)).status,403);
  assert.equal((await call('writer@example.invalid',{operation:'decode',table:b.table_id,input:encoded.body.broadcast})).status,403);
  assert.equal((await call('reader@example.invalid',{...payload,table:other.table_id})).status,403);

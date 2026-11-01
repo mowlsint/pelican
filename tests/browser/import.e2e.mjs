@@ -25,7 +25,7 @@ try{
    // Exercise the native chooser, rather than bypassing a hidden control.
    const [chooser]=await Promise.all([page.waitForEvent('filechooser'),page.locator('#bookFile').click()]);await chooser.setFiles(bf);await idle();assert.equal(await page.locator('#table option').count(),1);checks++;
    await page.locator('#signalFile').setInputFiles(sf);await idle();assert.match(await page.locator('#loaded').innerText(),/Kennsignal geladen/);checks++;
-   await page.locator('#encode').click();const wire=await page.locator('#out').innerText();assert.equal(wire.split('\n')[0],'TST');await page.locator('#input').fill(wire);await page.locator('#decode').click();assert.equal(JSON.parse(await page.locator('#decoded').innerText()).messages.length,1);checks++;
+   await page.locator('#encode').click();const wire=await page.locator('#out').innerText();assert.equal(wire.split('\n')[0],'TST');await page.locator('#input').fill(wire);await page.locator('#decode').click();assert.equal(JSON.parse(await page.locator('#decoded').textContent()).messages.length,1);checks++;
    // A signal must survive either order of overlapping file reads.
    for(const slow of ['book','signals']){
     await fresh();await page.evaluate(slow=>{const read=File.prototype.text;File.prototype.text=async function(){if(this.name.includes('.'+slow+'.json'))await new Promise(r=>setTimeout(r,250));return read.call(this)}},slow);
