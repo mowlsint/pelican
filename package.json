@@ -1,7 +1,7 @@
 {
   "name": "pelican-cloudflare-pages",
   "private": true,
-  "version": "1.5.0-rc.2.1",
+  "version": "1.5.0-rc.2.2",
   "type": "module",
   "dependencies": {
     "jose": "6.2.13"
@@ -12,6 +12,7 @@
     "sync:offline": "node scripts/sync-offline.mjs",
     "build": "node scripts/sync-offline.mjs && node scripts/build.mjs",
     "test:offline": "node tests/browser/offline.e2e.mjs",
+    "test:imports": "node tests/browser/import.e2e.mjs",
     "dev": "wrangler pages dev dist",
     "build:pages": "node scripts/sync-offline.mjs && node scripts/build-github-pages.mjs"
   },

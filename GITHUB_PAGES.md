@@ -12,6 +12,10 @@ Die Datei `index.html` im Repository-Wurzelverzeichnis gehört weiterhin zum get
 
 ## Nutzung
 
+App-Wartungsstand **1.5.0-rc.2.2**: Importstatus steht direkt bei den sichtbaren Dateifeldern. Tafel- und Kennsignalimporte werden in ihrer Reihenfolge verarbeitet und können sich nicht mehr gegenseitig überschreiben. Fehlerhafte Mehrfachimporte verändern den bisherigen Bestand nicht.
+
+Unterstützt werden ausschließlich Einzeltafeln und separate Kennsignale der Edition **1.5-SECURITY-RC2**. Das private ZIP zuerst entpacken und Dateien aus `PRIVATE/` wählen: `*.book.json` für Tafeln, `*.signals.json` für Kennsignale. PDF-Druckbücher und die Masterdaten sind keine importierbaren Einzeltafeln. Ältere DRAFT-Editionen werden ausdrücklich abgewiesen; das bloße Ändern des Editionsfelds ist keine Migration.
+
 1. Öffentliche Station öffnen oder Offline-HTML herunterladen.
 2. Eigene `.book.json` importieren.
 3. Die separat ausgegebene `.signals.json` importieren.
@@ -23,5 +27,7 @@ Es gibt keine öffentlichen Tafeln, Kennsignaldateien oder echten Meldungsarchiv
 ## Prüfen und zurücksetzen
 
 `npm ci`, `npm run build:pages`, `npm test`. Der Browser-Regressionslauf unter `tests/browser/offline.e2e.mjs` kann über `PELICAN_OFFLINE_HTML=docs/index.html` gegen die veröffentlichte Startdatei ausgeführt werden. Private Testeingaben verbleiben außerhalb des Repositorys.
+
+`npm run test:imports` prüft mit synthetischen Tafeln den nativen Dateidialog, überlappende Importe in beiden Reihenfolgen, Editionskonflikte, vertauschte Dateitypen, atomare Ablehnung beschädigter Dateien, Erholung nach Fehlern, FileReader-Fallback und lokale Verarbeitung. Playwright benötigt eine lokale Chromium-Installation; alternative Pfade können über `PELICAN_PLAYWRIGHT_MODULE`, `PELICAN_CHROMIUM` und `PELICAN_CHROMIUM_ARGS` gesetzt werden.
 
 Ein Rückfall der öffentlichen Seite erfolgt über einen geprüften vorherigen Commit des Branches `public-pages` beziehungsweise durch Abschalten der Pages-Veröffentlichung in Settings → Pages. Die private D1 und deren Grants werden dabei nicht verändert.
